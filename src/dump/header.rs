@@ -196,13 +196,13 @@ pub unsafe fn recl_symptr_table(nt_h: *const IMAGE_NT_HEADERS32, sectionv: &[IMA
 pub unsafe fn dump_header(h_proc: HANDLE, base_addr: u64, addr: &mut LPVOID, outfile: &mut File) -> Result<Vec<IMAGE_SECTION_HEADER>, io::Error> {
     let mut h_nt: HeaderNt = HeaderNt::default();
     let mut dos_header: IMAGE_DOS_HEADER = mem::zeroed();
-    if ReadProcessMemory(h_proc, base_addr as LPVOID, &mut dos_header as *mut _ as LPVOID, mem::size_of::<IMAGE_DOS_HEADER>(), &mut 0) == 0 {
+    if ReadProcessMemory(h_proc, base_addr as LPVOID, ptr::addr_of_mut!(dos_header) as LPVOID, mem::size_of::<IMAGE_DOS_HEADER>(), &mut 0) == 0 {
         eprintln!("{RED}Failed to read IMAGE_DOS_HEADER : {}{RESET}", io::Error::last_os_error());
         std::process::exit(1)
     }
     *addr = (base_addr + dos_header.e_lfanew as u64 + 4) as LPVOID;
     let mut machine = 0u16;
-    if ReadProcessMemory(h_proc, *addr as LPVOID, &mut machine as *mut _ as LPVOID, 2, &mut 0) == 0 {
+    if ReadProcessMemory(h_proc, *addr as LPVOID, ptr::addr_of_mut!(machine) as LPVOID, 2, &mut 0) == 0 {
         eprintln!("{RED}Failed to read IMAGE_NT_HEADER : {}", io::Error::last_os_error());
         CloseHandle(h_proc);
         std::process::exit(1);
@@ -213,7 +213,7 @@ pub unsafe fn dump_header(h_proc: HANDLE, base_addr: u64, addr: &mut LPVOID, out
     match machine {
         IMAGE_FILE_MACHINE_I386  => {
             let mut nt32: IMAGE_NT_HEADERS32 = mem::zeroed();
-            if ReadProcessMemory(h_proc, *addr, &mut nt32 as *mut _ as LPVOID, mem::size_of::<IMAGE_NT_HEADERS32>(), &mut 0) == 0 {
+            if ReadProcessMemory(h_proc, *addr, ptr::addr_of_mut!(nt32) as LPVOID, mem::size_of::<IMAGE_NT_HEADERS32>(), &mut 0) == 0 {
                 eprintln!("{RED}Failed to read IMAGE_NT_HEADER32 : {}{RESET}", io::Error::last_os_error());
                 CloseHandle(h_proc);
                 std::process::exit(1);
@@ -225,7 +225,7 @@ pub unsafe fn dump_header(h_proc: HANDLE, base_addr: u64, addr: &mut LPVOID, out
 
         IMAGE_FILE_MACHINE_AMD64 => {
             let mut nt64: IMAGE_NT_HEADERS64 = mem::zeroed();
-            if ReadProcessMemory(h_proc, *addr, &mut nt64 as *mut _ as LPVOID, mem::size_of::<IMAGE_NT_HEADERS64>(), &mut 0) == 0 {
+            if ReadProcessMemory(h_proc, *addr, ptr::addr_of_mut!(nt64) as LPVOID, mem::size_of::<IMAGE_NT_HEADERS64>(), &mut 0) == 0 {
                 eprintln!("{RED}Failed to read IMAGE_NT_HEADER64 : {}{RESET}", io::Error::last_os_error());
                 CloseHandle(h_proc);
                 std::process::exit(1);
