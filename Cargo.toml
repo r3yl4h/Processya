@@ -1,0 +1,12 @@
+[package]
+name = "Processya"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+winapi = { version = "0.3", features = ["tlhelp32", "winnt", "memoryapi", "handleapi", "processthreadsapi", "psapi"] }
+ntapi = "0.4.1"
+structopt = "0.3.26"
+once_cell = "1.19.0"
+
+
