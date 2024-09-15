@@ -1,5 +1,5 @@
 # processya - Process-Code-Dumper
-   Tt allows you to dump the code of a running process with some nice options, I plan to improve it later, well see xd
+   It allows you to dump the code of a running process with some nice options, I plan to improve it later, well see xd
   
 # Usage
 ```
